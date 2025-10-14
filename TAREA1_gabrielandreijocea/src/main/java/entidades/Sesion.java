@@ -30,21 +30,5 @@ public class Sesion {
 		Sesion.perfil = perfil;
 	}
 	
-	public static boolean esAdmin() {
-			return perfil == Perfiles.ADMIN;
-    }
-
-    public static boolean esCoordinacion() {
-        return perfil == Perfiles.COORDINACION;
-    }
-
-    public static boolean esArtista() {
-        return perfil == Perfiles.ARTISTA;
-    }
-
-    public static boolean esInvitado() {
-        return perfil == Perfiles.INVITADO;
-    }
-	
 	
 }
