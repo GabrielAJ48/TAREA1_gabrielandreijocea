@@ -28,7 +28,5 @@ public class Sesion {
 
 	public static void setPerfil(Perfiles perfil) {
 		Sesion.perfil = perfil;
-	}
-	
-	
+	}	
 }
