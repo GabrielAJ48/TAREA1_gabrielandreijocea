@@ -1,10 +1,13 @@
 package entidades;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Artista extends Persona{
 	
 	private Long idArt;
 	private String apodo = null;
-	private Especialidades especialidad;
+	private Set <Especialidades> especialidades = new HashSet<>();
 	
 	public Artista() {
 		
@@ -26,12 +29,18 @@ public class Artista extends Persona{
 		this.apodo = apodo;
 	}
 
-	public Especialidades getEspecialidad() {
-		return especialidad;
+	public Set<Especialidades> getEspecialidades() {
+		return especialidades;
 	}
 
-	public void setEspecialidad(Especialidades especialidad) {
-		this.especialidad = especialidad;
+	public void setEspecialidad(Set<Especialidades> especialidad) {
+		this.especialidades = especialidad;
 	}
+	
+	public void addEspecialidad(Especialidades e) {
+        if (e != null) {
+            especialidades.add(e);
+        }
+    }
 	
 }
