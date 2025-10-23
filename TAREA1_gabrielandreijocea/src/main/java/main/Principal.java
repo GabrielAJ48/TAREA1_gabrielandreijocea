@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.InputMismatchException;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.regex.Pattern;
@@ -40,17 +42,23 @@ public class Principal {
 	public static void cerrarSesion() {
 		Sesion.setNombre("INVITADO");
 		Sesion.setPerfil(Perfiles.INVITADO);
+		Sesion.setIdPersona(null);
 		System.out.println("Sesión cerrada, ha vuelto al perfil de invitado.");
 	}
 
 	public static boolean confirmarSalida() {
-		System.out.println("¿Está seguro que desea salir? (S/N)");
-		char confirmacion = leer.nextLine().trim().toUpperCase().charAt(0);
-		if (confirmacion == 'S') {
-			System.out.println("¡Adiós!");
-			return true;
+		while (true) {
+			System.out.println("¿Está seguro que desea salir? (S/N)");
+			String input = leer.nextLine().trim().toUpperCase();
+			if (input.equals("S")) {
+				System.out.println("¡Adiós!");
+				return true;
+			} else if (input.equals("N")) {
+				return false;
+			} else {
+				System.out.println("Opción inválida. Por favor, introduzca S o N.");
+			}
 		}
-		return false;
 	}
 
 	public static void main(String[] args) {
@@ -61,7 +69,7 @@ public class Principal {
 		int op = 0;
 
 		do {
-			System.out.println("\n======================================");
+			System.out.println("======================================");
 			System.out.println("Usuario: " + Sesion.getNombre());
 			System.out.println("Perfil: " + Sesion.getPerfil());
 			System.out.println("======================================");
@@ -73,8 +81,14 @@ public class Principal {
 				System.out.println("1. Ver espectáculos");
 				System.out.println("2. Iniciar sesión");
 				System.out.println("3. Salir");
-				op = leer.nextInt();
-				leer.nextLine();
+				try {
+				    op = leer.nextInt();
+				    leer.nextLine();
+				} catch (InputMismatchException e) {
+				    System.out.println("Entrada inválida. Introduzca un número válido.");
+				    leer.nextLine();
+				    op = -1;
+				}
 
 				switch (op) {
 				case 1:
@@ -85,10 +99,16 @@ public class Principal {
 						System.out.println("Ya hay una sesión activa.");
 						break;
 					}
+					
 					System.out.println("Introduzca su nombre de usuario:");
 					String nombreUsuario = leer.nextLine();
 					System.out.println("Introduzca su contraseña:");
 					String contrasenia = leer.nextLine();
+					
+					if (nombreUsuario.isBlank() || contrasenia.isBlank()) {
+                        System.out.println("El nombre de usuario y la contraseña no pueden estar vacíos.");
+                        break;
+                    }
 
 					if (nombreUsuario.equals(props.getProperty("usuarioAdmin")) && contrasenia.equals(props.getProperty("passwordAdmin"))) {
 						Sesion.setNombre("Administrador");
@@ -127,7 +147,7 @@ public class Principal {
 					GestorEspectaculos.verEspectaculos(props.getProperty("ficheroespectaculos"));
 					break;
 				case 2:
-					
+					System.out.println("Funcionalidad no implementada en esta tarea.");
 					break;
 				case 3:
 					cerrarSesion();
@@ -152,11 +172,45 @@ public class Principal {
 				leer.nextLine();
 
 				switch (op) {
-				case 1:
-				    
+				case 1: GestorEspectaculos.verEspectaculos(props.getProperty("ficheroespectaculos"));				    
 					break;
-				case 2:
-				    
+				case 2: 
+					String nombreEspectaculo;
+                    String fechaini;
+                    String fechafin;
+					
+					while (true) {
+                    System.out.println("Introduzca el nombre del espectáculo:");
+                    nombreEspectaculo = leer.nextLine();
+                    if (GestorEspectaculos.comprobarNombreEspectaculo(nombreEspectaculo, props.getProperty("ficheroespectaculos"))) {
+                        break;
+                    }
+                }
+				
+				while (true) {
+                    System.out.println("Introduzca la fecha de inicio (dd/MM/yyyy):");
+                    fechaini = leer.nextLine();
+                    System.out.println("Introduzca la fecha de fin (dd/MM/yyyy):");
+                    fechafin = leer.nextLine();
+                    if (GestorEspectaculos.comprobarFechasEspectaculo(fechaini, fechafin)) {
+                        break;
+                    }
+                }
+				
+				long idPersonaPropia = Sesion.getIdPersona();
+                Long idCoordPropio = GestorCredenciales.getIdCoordPorIdPersona(idPersonaPropia, props.getProperty("ficherocredenciales"));
+                if (idCoordPropio == null) {
+                    System.out.println("No se pudo encontrar su ID de coordinador.");
+                    break;
+                }
+                
+                Espectaculo nuevoEspectaculo = new Espectaculo();
+                nuevoEspectaculo.setNombre(nombreEspectaculo);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                nuevoEspectaculo.setFechaini(LocalDate.parse(fechaini, formatter));
+                nuevoEspectaculo.setFechafin(LocalDate.parse(fechafin, formatter));
+                
+                GestorEspectaculos.crearEspectaculo(nuevoEspectaculo, idCoordPropio, props.getProperty("ficheroespectaculos"));
 					break;
 				case 3:
 					cerrarSesion();
@@ -182,11 +236,63 @@ public class Principal {
 				leer.nextLine();
 
 				switch (op) {
-				case 1:
-				    
+				case 1: GestorEspectaculos.verEspectaculos(props.getProperty("ficheroespectaculos"));
 					break;
 				case 2:
-				    
+					String nombreEspectaculo;
+                    String fechaStrInicio;
+                    String fechaStrFin;
+                    
+                    while (true) {
+                        System.out.println("Introduzca el nombre del espectáculo:");
+                        nombreEspectaculo = leer.nextLine();
+                        if (GestorEspectaculos.comprobarNombreEspectaculo(nombreEspectaculo, props.getProperty("ficheroespectaculos"))) {
+                            break;
+                        }
+                    }
+                    
+                    while (true) {
+                        System.out.println("Introduzca la fecha de inicio (dd/MM/yyyy):");
+                        fechaStrInicio = leer.nextLine();
+                        System.out.println("Introduzca la fecha de fin (dd/MM/yyyy):");
+                        fechaStrFin = leer.nextLine();
+                        if (GestorEspectaculos.comprobarFechasEspectaculo(fechaStrInicio, fechaStrFin)) {
+                            break;
+                        }
+                    }
+                    
+                    Map<Long, String> listaCoordinadores = GestorCredenciales.getCoordinadoresPorIdCoordMap(props.getProperty("ficherocredenciales"));
+                    if (listaCoordinadores.isEmpty()) {
+                        System.out.println("No hay coordinadores registrados. No se puede crear un espectáculo.");
+                        break;
+                    }
+
+                    System.out.println("--- Lista de Coordinadores Disponibles ---");
+                    listaCoordinadores.forEach((idCoord, nombre) -> System.out.println("ID Coordinador: " + idCoord + " - Nombre: " + nombre));
+                    
+                    Long idCoordElegido;
+                    while (true) {
+                        System.out.println("Introduzca el ID del Coordinador a asignar:");
+                        try {
+                            idCoordElegido = Long.parseLong(leer.nextLine());
+                            if (listaCoordinadores.containsKey(idCoordElegido)) {
+                                break;
+                            } else {
+                                System.out.println("ID no encontrado en la lista de coordinadores.");
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("Por favor, introduzca un número de ID válido.");
+                        }
+                    }
+                    
+                    Espectaculo nuevoEspectaculo = new Espectaculo();
+                    nuevoEspectaculo.setNombre(nombreEspectaculo);
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    nuevoEspectaculo.setFechaini(LocalDate.parse(fechaStrInicio, formatter));
+                    nuevoEspectaculo.setFechafin(LocalDate.parse(fechaStrFin, formatter));
+                    
+                    GestorEspectaculos.crearEspectaculo(nuevoEspectaculo, idCoordElegido, props.getProperty("ficheroespectaculos"));
+                    
 					break;
 				case 3:
 					Persona persona = null;
@@ -285,6 +391,7 @@ public class Principal {
 						}
 
 						do {
+							System.out.println("Especialidades disponibles: ACROBACIA, HUMOR, MAGIA, EQUILIBRISMO, MALABARISMO");
 							System.out.println("Introduzca las especialidades separadas por comas (Ej: ACROBACIA,HUMOR):");
 							String entrada = leer.nextLine().trim();
 							String[] partes = entrada.split(",");
@@ -293,7 +400,7 @@ public class Principal {
 									Especialidades esp = Especialidades.valueOf(p.trim().toUpperCase());
 									a.addEspecialidad(esp);
 								} catch (IllegalArgumentException e) {
-									if (!p.isBlank())
+									if (!p.isEmpty())
 										System.out.println(p.trim() + " no es una especialidad válida y será ignorada.");
 								}
 							}
@@ -307,30 +414,18 @@ public class Principal {
 					while (true) {
 						System.out.println("Introduzca el nombre de usuario:");
 						nombreUsuario = leer.nextLine().trim();
-						if (nombreUsuario.length() < 3 || nombreUsuario.contains(" ")) {
-							System.out.println("El nombre de usuario debe tener más de 2 caracteres y no contener espacios.");
-							continue;
+						if (GestorCredenciales.comprobarUsuario(nombreUsuario, props.getProperty("ficherocredenciales"))) {
+							break;
 						}
-						if (!GestorCredenciales.comprobarUsuario(nombreUsuario, props.getProperty("ficherocredenciales"))) {
-							System.out.println("El nombre de usuario ya existe. Intente con otro.");
-							continue;
-						}
-						break;
 					}
 
 					String contrasenia;
 					while (true) {
 						System.out.println("Introduzca la contraseña:");
 						contrasenia = leer.nextLine().trim();
-						if (contrasenia.length() < 3 || contrasenia.contains(" ")) {
-							System.out.println("La contraseña debe tener más de 2 caracteres y no contener espacios.");
-							continue;
+						if (GestorCredenciales.comprobarContrasenia(contrasenia, props.getProperty("ficherocredenciales"))) {
+							break;
 						}
-						if (!GestorCredenciales.comprobarContrasenia(contrasenia, props.getProperty("ficherocredenciales"))) {
-							System.out.println("Esa contraseña ya está en uso. Intente con otra distinta.");
-							continue;
-						}
-						break;
 					}
 
 					String perfil;

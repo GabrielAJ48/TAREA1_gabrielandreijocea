@@ -18,7 +18,7 @@ public class GestorRegistro {
 			long nuevoIdPersona = obtenerSiguienteIdPersona(ruta);
 			persona.setId(nuevoIdPersona);
 
-			int[] contadores = obtenerContadoresPerfiles(ruta);
+			long[] contadores = obtenerContadoresPerfiles(ruta);
 			if (persona instanceof Coordinacion) {
 				long nuevoIdCoord = contadores[0] + 1;
 				((Coordinacion) persona).setIdCoord(nuevoIdCoord);
@@ -49,7 +49,7 @@ public class GestorRegistro {
 	}
 
 	private static long obtenerSiguienteIdPersona(String ruta) {
-		int maxId = 0;
+		long maxId = 0;
 		try (BufferedReader br = new BufferedReader(new FileReader(ruta))) {
 			String linea;
 			while ((linea = br.readLine()) != null) {
@@ -57,7 +57,7 @@ public class GestorRegistro {
 					String[] partes = linea.split("\\|");
 					try {
 						if (partes.length > 0) {
-							int idActual = Integer.parseInt(partes[0]);
+							long idActual = Long.parseLong(partes[0]);
 							if (idActual > maxId) {
 								maxId = idActual;
 							}
@@ -73,8 +73,8 @@ public class GestorRegistro {
 		return maxId + 1;
 	}
 	
-	private static int[] obtenerContadoresPerfiles(String ruta) {
-		int[] contadores = new int[2];
+	private static long[] obtenerContadoresPerfiles(String ruta) {
+		long[] contadores = new long[2];
 		
 		try (BufferedReader br = new BufferedReader(new FileReader(ruta))) {
 			String linea;

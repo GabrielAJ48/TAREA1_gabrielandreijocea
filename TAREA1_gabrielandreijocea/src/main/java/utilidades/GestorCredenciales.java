@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import entidades.Perfiles;
 import entidades.Sesion;
@@ -12,27 +14,16 @@ import entidades.Sesion;
 public class GestorCredenciales {
 	
 	public static boolean comprobarContrasenia(String contrasenia, String ruta) {
-		List<String> lineas = new ArrayList<>();
-
-		try (BufferedReader br = new BufferedReader(new FileReader(ruta))) {
-			String linea;
-			while ((linea = br.readLine()) != null) {
-				lineas.add(linea);
-			}
-
-			for (String l : lineas) {
-				String[] partes = l.split("\\|");
-				if (partes.length == 7) {
-					String pass = partes[2];
-
-					if (pass.equals(contrasenia)) {
-						return false;
-					}
-				}
-			}
-		} catch (IOException e) {
-			System.out.println("Error de lectura: " + e.getMessage());
-		}
+		
+		if (contrasenia.length() <= 2) {
+	        System.out.println("La contraseña debe tener más de 2 caracteres.");
+	        return false;
+	    }
+	    if (contrasenia.contains(" ")) {
+	        System.out.println("La contraseña no puede contener espacios.");
+	        return false;
+	    }
+		
 		return true;
 	}
 	
@@ -106,6 +97,7 @@ public class GestorCredenciales {
 			for (String l : lineas) {
 				String[] partes = l.split("\\|");
 				if (partes.length == 7) {
+					String idPersona = partes[0];
 					String usuario = partes[1];
 					String contrasenia = partes[2];
 					String nombrePersona = partes[4];
@@ -114,6 +106,7 @@ public class GestorCredenciales {
 					if (usuario.equals(nombreUsuario) && contrasenia.equals(contraseña)) {
 						Sesion.setNombre(nombrePersona);
 						Sesion.setPerfil(perfil);
+						Sesion.setIdPersona(Long.parseLong(idPersona));
 						return true;
 					}
 				}
@@ -123,4 +116,43 @@ public class GestorCredenciales {
 		}
 		return false;
 	}
+	
+	public static Map<Long, String> getCoordinadoresPorIdCoordMap(String ruta) {
+        Map<Long, String> coordinadores = new HashMap<>();
+        long contadorCoord = 0;
+        try (BufferedReader br = new BufferedReader(new FileReader(ruta))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split("\\|");
+                if (partes.length == 7 && partes[6].trim().equalsIgnoreCase("coordinacion")) {
+                    contadorCoord++;
+                    String nombre = partes[4];
+                    coordinadores.put(contadorCoord, nombre);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error de lectura");
+        }
+        return coordinadores;
+    }
+
+    public static Long getIdCoordPorIdPersona(long idPersonaBuscada, String ruta) {
+        long contadorCoord = 0;
+        try (BufferedReader br = new BufferedReader(new FileReader(ruta))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split("\\|");
+                if (partes.length == 7 && partes[6].trim().equalsIgnoreCase("coordinacion")) {
+                    contadorCoord++;
+                    long idPersonaActual = Long.parseLong(partes[0]);
+                    if (idPersonaActual == idPersonaBuscada) {
+                        return contadorCoord;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error de lectura");
+        }
+        return null;
+    }
 }

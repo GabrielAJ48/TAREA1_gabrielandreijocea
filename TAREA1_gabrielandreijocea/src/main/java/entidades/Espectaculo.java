@@ -7,6 +7,10 @@ import java.util.Set;
 
 public class Espectaculo implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Long id;
 	private String nombre;
 	private LocalDate fechaini;

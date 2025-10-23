@@ -4,6 +4,7 @@ public class Sesion {
 	
 	private static String nombre ="Invitado";
 	private static Perfiles perfil = Perfiles.INVITADO;
+	private static Long idPersona = null;
 	
 	public Sesion() {
 		
@@ -28,5 +29,13 @@ public class Sesion {
 
 	public static void setPerfil(Perfiles perfil) {
 		Sesion.perfil = perfil;
-	}	
+	}
+	
+	public static Long getIdPersona() {
+		return idPersona;
+	}
+
+	public static void setIdPersona(Long idPersona) {
+		Sesion.idPersona = idPersona;
+	}
 }

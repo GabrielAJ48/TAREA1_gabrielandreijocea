@@ -9,3 +9,4 @@
 9|isabel|isabel|mijr@educastur.org|María Isabel Jardón|España|coordinacion
 10|eusebio|eusebio85|eusebio85@gmail.com|Eusebio Prados-García|Venezuela|artista
 11|mariadev|mariadev|maria@gmail.com|maria|Colombia|coordinacion
+12|juanin|juanin|juan@gmail.com|juan|Turquía|artista
