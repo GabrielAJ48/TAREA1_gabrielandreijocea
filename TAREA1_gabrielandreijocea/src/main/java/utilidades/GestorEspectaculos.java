@@ -46,7 +46,7 @@ public class GestorEspectaculos {
 	            System.out.println("El nombre del espectáculo no puede ser superior a 25 caracteres");
 	            return false;
 	        }
-	        if (nombre.isBlank()) {
+	        if (nombre == null || nombre.isBlank()) {
 	            System.out.println("El nombre no puede estar vacío");
 	            return false;
 	        }
@@ -154,5 +154,4 @@ public static void crearEspectaculo(Espectaculo nuevoEspectaculo, Long idCoordin
             System.out.println("Error al guardar el espectáculo");
         }
     }
-	
 }

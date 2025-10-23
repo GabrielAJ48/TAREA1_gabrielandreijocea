@@ -352,24 +352,44 @@ public class Principal {
 						c.setEmail(email);
 						c.setNacionalidad(nacionalidad);
 						
-						System.out.println("¿Es senior? (S/N):");
-						char confirmarSenior = leer.nextLine().trim().toUpperCase().charAt(0);
-						if (confirmarSenior == 'S') {
+						boolean esSenior = false;
+						while (true) {
+							System.out.print("¿Es senior? (S/N): ");
+							String inputSenior = leer.nextLine().trim().toUpperCase();
+							if (inputSenior.equals("S")) {
+								esSenior = true;
+								break;
+							} else if (inputSenior.equals("N")) {
+								esSenior = false;
+								break;
+							} else {
+								System.out.println("Opción inválida. Por favor, introduzca S o N.");
+								
+							}
+						}
+
+
+						if (esSenior) {
 							c.setSenior(true);
-							LocalDate fechaSenior;
+							LocalDate fechaSenior = null;
 							while (true) {
-								System.out.println("¿Desde qué fecha es senior? (dd/MM/yyyy):");
+								System.out.print("¿Desde qué fecha es senior? (dd/MM/yyyy): ");
 								String fechaStr = leer.nextLine().trim();
+								if (fechaStr.isBlank()) {
+									System.out.println("La fecha no puede estar vacía.");
+									continue;
+								}
 								try {
-									fechaSenior = LocalDate.parse(fechaStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+									DateTimeFormatter seniorFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+									fechaSenior = LocalDate.parse(fechaStr, seniorFormatter);
 									if (fechaSenior.isAfter(LocalDate.now())) {
 										System.out.println("La fecha no puede ser futura.");
 									} else {
-									    c.setFechasenior(fechaSenior);
-										break;
+										c.setFechasenior(fechaSenior);
+										break; 
 									}
 								} catch (DateTimeParseException e) {
-									System.out.println("Formato de fecha inválido. Use dd/MM/yyyy.");
+									System.out.println("❌ Formato de fecha inválido. Use dd/MM/yyyy.");
 								}
 							}
 						}
@@ -381,13 +401,29 @@ public class Principal {
 						a.setEmail(email);
 						a.setNacionalidad(nacionalidad);
 
-						System.out.println("¿Tiene apodo artístico? (S/N):");
-						char tieneApodo = leer.nextLine().trim().toUpperCase().charAt(0);
-						if (tieneApodo == 'S') {
-							System.out.println("Introduzca el apodo:");
+						boolean tieneApodo = false;
+						while (true) {
+							System.out.print("¿Tiene apodo artístico? (S/N): ");
+							String inputApodo = leer.nextLine().trim().toUpperCase();
+							if (inputApodo.equals("S")) {
+								tieneApodo = true;
+								break;
+							} else if (inputApodo.equals("N")) {
+								tieneApodo = false;
+								break;
+							} else {
+								System.out.println("Opción inválida. Por favor, introduzca S o N.");
+							}
+						}
+						
+						if (tieneApodo) {
+							System.out.print("Introduzca el apodo: ");
 							String apodo = leer.nextLine().trim();
-							if (!apodo.isBlank())
+							if (!apodo.isBlank()) {
 								a.setApodo(apodo);
+							} else {
+								System.out.println("Apodo vacío, no se asignará.");
+							}
 						}
 
 						do {

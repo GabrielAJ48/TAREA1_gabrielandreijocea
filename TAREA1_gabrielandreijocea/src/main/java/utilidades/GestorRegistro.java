@@ -1,6 +1,7 @@
 package utilidades;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -67,6 +68,7 @@ public class GestorRegistro {
 					}
 				}
 			}
+		}catch (FileNotFoundException e) {
 		} catch (IOException e) {
 			System.out.println("Error de lectura del fichero de credenciales");
 		}
