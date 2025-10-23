@@ -1,6 +1,7 @@
 package utilidades;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ public class GestorCredenciales {
 	                }
 	            }
 	        }
+	    }catch (FileNotFoundException e) {
 	    } catch (IOException e) {
 	        System.out.println("Error de lectura");
 	    }
@@ -79,6 +81,7 @@ public class GestorCredenciales {
 					}
 				}
 			}
+		} catch (FileNotFoundException e) {
 		} catch (IOException e) {
 			System.out.println("Error de lectura: " + e.getMessage());
 		}
